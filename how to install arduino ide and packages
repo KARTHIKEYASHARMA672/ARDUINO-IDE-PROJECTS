@@ -1,0 +1,23 @@
+Step 1: Install Arduino IDE & Packages
+
+1️⃣ Download Arduino IDE
+
+Go to: https://www.arduino.cc/en/software
+
+Choose your OS (Windows/Mac/Linux) and install.
+
+2️⃣ Connect Arduino Uno :-
+Plug your Arduino Uno into your computer via USB cable.
+In Arduino IDE:
+--> Go to Tools → Board → Arduino AVR Boards → Arduino Uno
+--> Go to Tools → Port → Select the COM Port (usually COM3 or above for Windows, /dev/ttyUSBx for Linux).
+
+3️⃣ Install Required Libraries :- 
+Default Projects: No extra library needed.
+Advanced Projects: Use Sketch → Include Library → Manage Libraries to install needed ones.
+
+For example:
+--> DHT sensor library by Adafruit (for DHT11/DHT22 sensors)
+--> LiquidCrystal (for LCD displays, comes pre-installed)
+--> MQUnifiedsensor (for MQ gas sensors)
+--> ESP8266WiFi (if using WiFi module)
