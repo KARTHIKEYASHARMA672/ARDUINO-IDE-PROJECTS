@@ -1,0 +1,21 @@
+CONNECTIONS:-
+
+| Arduino Pin | Component | Description                                |
+| ----------- | --------- | ------------------------------------------ |
+| Pin 13      | LED (+)   | Positive leg of LED                        |
+| GND         | LED (-)   | Negative leg (shorter) via resistor (220Ω) |
+
+
+CODE:- 
+
+void setup() {
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(13, HIGH); // LED ON
+  delay(1000);            // Wait 1 sec
+  digitalWrite(13, LOW);  // LED OFF
+  delay(1000);            // Wait 1 sec
+}
+
