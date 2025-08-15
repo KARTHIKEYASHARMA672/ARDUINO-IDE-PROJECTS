@@ -1,0 +1,50 @@
+CONNECTONS:-
+| MQ-135 Pin | Arduino Pin |
+| ---------- | ----------- |
+| VCC        | 5V          |
+| GND        | GND         |
+| AO         | A0          |
+
+
+| LED Color | Arduino Pin |
+| --------- | ----------- |
+| Green     | 8           |
+| Yellow    | 9           |
+| Red       | 10          |
+
+
+CODE:-
+
+int mq135Pin = A0;
+int greenLED = 8;
+int yellowLED = 9;
+int redLED = 10;
+int sensorValue;
+
+void setup() {
+  pinMode(greenLED, OUTPUT);
+  pinMode(yellowLED, OUTPUT);
+  pinMode(redLED, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  sensorValue = analogRead(mq135Pin);
+  Serial.println(sensorValue);
+
+  if (sensorValue < 300) {
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(yellowLED, LOW);
+    digitalWrite(redLED, LOW);
+  } else if (sensorValue >= 300 && sensorValue < 500) {
+    digitalWrite(greenLED, LOW);
+    digitalWrite(yellowLED, HIGH);
+    digitalWrite(redLED, LOW);
+  } else {
+    digitalWrite(greenLED, LOW);
+    digitalWrite(yellowLED, LOW);
+    digitalWrite(redLED, HIGH);
+  }
+
+  delay(500);
+}
