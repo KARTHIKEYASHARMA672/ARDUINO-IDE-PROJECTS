@@ -1,0 +1,45 @@
+CONNECTIONS:-
+| Component | Pin      | Arduino Uno Pin | Notes        |
+| --------- | -------- | --------------- | ------------ |
+| DHT22     | 1 (VCC)  | 5V              | —            |
+| DHT22     | 2 (DATA) | D2              | 10kΩ pull-up |
+| DHT22     | 4 (GND)  | GND             | —            |
+| Red LED   | +        | D6 via 220Ω     | —            |
+| Red LED   | -        | GND             | —            |
+| Green LED | +        | D5 via 220Ω     | —            |
+| Green LED | -        | GND             | —            |
+
+
+
+CODE :-
+
+#include "DHT.h"
+
+#define DHTPIN 2
+#define DHTTYPE DHT22
+#define LED_RED 6
+#define LED_GREEN 5
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  dht.begin();
+}
+
+void loop() {
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (!isnan(t)) {
+    if (t > 30) {
+      digitalWrite(LED_RED, HIGH);
+      digitalWrite(LED_GREEN, LOW);
+    } else {
+      digitalWrite(LED_RED, LOW);
+      digitalWrite(LED_GREEN, HIGH);
+    }
+  }
+  delay(2000);
+}
