@@ -1,0 +1,43 @@
+CONNECTIONS :-
+
+| DHT22 Pin | Arduino Uno Pin |
+| --------- | --------------- |
+| 1 (VCC)   | 5V              |
+| 2 (DATA)  | Digital Pin 2   |
+| 4 (GND)   | GND             |
+
+
+CODE:-
+
+#include "DHT.h"
+
+#define DHTPIN 2
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+}
+
+void loop() {
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature(); // Celsius
+  float temperatureF = dht.readTemperature(true); // Fahrenheit
+
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println("Failed to read from DHT sensor!");
+    return;
+  }
+
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.print(" %\tTemperature: ");
+  Serial.print(temperature);
+  Serial.print(" *C ");
+  Serial.print(temperatureF);
+  Serial.println(" *F");
+
+  delay(2000);
+}
