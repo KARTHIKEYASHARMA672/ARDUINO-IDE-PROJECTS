@@ -1,0 +1,56 @@
+CONNECTIONS :-
+| Component | Pin      | Arduino Uno Pin | Notes                                      |
+| --------- | -------- | --------------- | ------------------------------------------ |
+| DHT22     | 1 (VCC)  | 5V              | —                                          |
+| DHT22     | 2 (DATA) | D2              | 10kΩ pull-up to VCC                        |
+| DHT22     | 4 (GND)  | GND             | —                                          |
+| LCD       | VSS      | GND             | —                                          |
+| LCD       | VDD      | 5V              | —                                          |
+| LCD       | V0       | Potentiometer   | For contrast                               |
+| LCD       | RS       | D12             | —                                          |
+| LCD       | E        | D11             | —                                          |
+| LCD       | D4       | D5              | —                                          |
+| LCD       | D5       | D4              | —                                          |
+| LCD       | D6       | D3              | —                                          |
+| LCD       | D7       | D2              | Shared with DHT — move DHT to D7 if needed |
+| LCD       | A (LED+) | 5V via 220Ω     | Backlight                                  |
+| LCD       | K (LED-) | GND             | Backlight                                  |
+
+
+CODE :-
+#include "DHT.h"
+#include <LiquidCrystal.h>
+
+#define DHTPIN 2
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+void setup() {
+  lcd.begin(16, 2);
+  dht.begin();
+}
+
+void loop() {
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(h) || isnan(t)) {
+    lcd.setCursor(0,0);
+    lcd.print("Sensor Error");
+    return;
+  }
+
+  lcd.setCursor(0,0);
+  lcd.print("Temp: ");
+  lcd.print(t);
+  lcd.print(" C");
+
+  lcd.setCursor(0,1);
+  lcd.print("Hum: ");
+  lcd.print(h);
+  lcd.print(" %");
+
+  delay(2000);
+}
