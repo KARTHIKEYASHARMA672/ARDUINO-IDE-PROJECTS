@@ -1,0 +1,37 @@
+CONNECTIONS:-
+| MQ-135 Pin | Arduino Pin | Description   |
+| ---------- | ----------- | ------------- |
+| VCC        | 5V          | Power         |
+| GND        | GND         | Ground        |
+| AO         | A0          | Analog output |
+
+| Buzzer Pin | Arduino Pin | Description |
+| ---------- | ----------- | ----------- |
+| +          | 8           | Control pin |
+| -          | GND         | Ground      |
+
+
+CODE:-
+
+int mq135Pin = A0;
+int buzzerPin = 8;
+int sensorValue;
+int threshold = 400; // Adjust based on calibration
+
+void setup() {
+  pinMode(buzzerPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  sensorValue = analogRead(mq135Pin);
+  Serial.println(sensorValue);
+
+  if (sensorValue > threshold) {
+    digitalWrite(buzzerPin, HIGH);
+  } else {
+    digitalWrite(buzzerPin, LOW);
+  }
+
+  delay(500);
+}
