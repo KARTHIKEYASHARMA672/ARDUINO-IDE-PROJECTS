@@ -1,0 +1,44 @@
+CONNECTIONS:-
+| MQ-135 Pin | Arduino Pin | Description   |
+| ---------- | ----------- | ------------- |
+| VCC        | 5V          | Power         |
+| GND        | GND         | Ground        |
+| AO         | A0          | Analog output |
+
+
+| LCD Pin  | Arduino Pin                 | Description          |
+| -------- | --------------------------- | -------------------- |
+| VSS      | GND                         | Ground               |
+| VDD      | 5V                          | Power                |
+| V0       | Middle pin of Potentiometer | Contrast             |
+| RS       | 12                          | Register Select      |
+| RW       | GND                         | Ground               |
+| E        | 11                          | Enable               |
+| D4       | 5                           | Data                 |
+| D5       | 4                           | Data                 |
+| D6       | 3                           | Data                 |
+| D7       | 2                           | Data                 |
+| A (LED+) | 5V                          | LCD Backlight        |
+| K (LED-) | GND                         | LCD Backlight Ground |
+
+
+CODE:-
+
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+int mq135Pin = A0;
+int sensorValue;
+
+void setup() {
+  lcd.begin(16, 2);
+  lcd.print("Air Quality:");
+}
+
+void loop() {
+  sensorValue = analogRead(mq135Pin);
+  lcd.setCursor(0, 1);
+  lcd.print(sensorValue);
+  lcd.print("   ");
+  delay(1000);
+}
