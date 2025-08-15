@@ -1,0 +1,23 @@
+CONNECTIONS:-
+| MQ-135 Pin | Arduino Uno Pin | Description   |
+| ---------- | --------------- | ------------- |
+| VCC        | 5V              | Power supply  |
+| GND        | GND             | Ground        |
+| AO         | A0              | Analog output |
+
+
+CODE:-
+
+int mq135Pin = A0;
+int sensorValue;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  sensorValue = analogRead(mq135Pin);
+  Serial.print("Air Quality Value: ");
+  Serial.println(sensorValue);
+  delay(1000);
+}
