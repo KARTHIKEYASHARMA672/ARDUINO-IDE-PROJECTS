@@ -1,0 +1,31 @@
+Connections:
+LCD Pins → Arduino Uno
+VSS → GND
+VDD → 5V
+V0 → Middle pin of 10k Potentiometer (other two to 5V & GND)
+RS → Pin 12
+RW → GND
+E → Pin 11
+D4 → Pin 5
+D5 → Pin 4
+D6 → Pin 3
+D7 → Pin 2
+A (LED+) → 5V (via 220Ω resistor)
+K (LED-) → GND
+
+
+code:-
+
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+void setup() {
+  lcd.begin(16, 2);
+  lcd.print("Hello, World!");
+}
+
+void loop() {
+  lcd.setCursor(0, 1);
+  lcd.print("Arduino LCD");
+}
