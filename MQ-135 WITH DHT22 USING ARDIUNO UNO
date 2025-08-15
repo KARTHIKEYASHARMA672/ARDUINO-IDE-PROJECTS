@@ -1,0 +1,36 @@
+CONNECTIONS:-
+| Sensor | Pin  | Arduino Pin |
+| ------ | ---- | ----------- |
+| MQ-135 | VCC  | 5V          |
+|        | GND  | GND         |
+|        | AO   | A0          |
+| DHT22  | VCC  | 5V          |
+|        | GND  | GND         |
+|        | Data | 7           |
+
+
+CODE:-
+#include "DHT.h"
+
+#define DHTPIN 7
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+int mq135Pin = A0;
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+}
+
+void loop() {
+  int airValue = analogRead(mq135Pin);
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+
+  Serial.print("Air: "); Serial.print(airValue);
+  Serial.print(" | Temp: "); Serial.print(temp);
+  Serial.print("C | Hum: "); Serial.print(hum); Serial.println("%");
+
+  delay(2000);
+}
