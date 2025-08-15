@@ -1,0 +1,103 @@
+CONNECTIONS:-
+| Component Pin          | Connects To (Arduino Uno)           | Notes                                                                                           |
+| ---------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
+|   DHT22 VCC            | 5V                                  | Power                                                                                           |
+|   DHT22 GND            | GND                                 | Ground                                                                                          |
+|   DHT22 DATA           | D2                                  | With 10K pull-up to 5V                                                                          |
+|   ESP-01 VCC           | 3.3V                                | **Do not use 5V** – needs 3.3V                                                                  |
+|   ESP-01 GND           | GND                                 | Ground                                                                                          |
+|   ESP-01 CH\_PD (EN)   | 3.3V                                | Pull HIGH to enable module                                                                      |
+|   ESP-01 TX            | Arduino Pin 2 (via voltage divider) | 5V → 3.3V                                                                                       |
+|   ESP-01 RX            | Arduino Pin 3                       | Use SoftwareSerial                                                                              |
+|   Arduino 3.3V         | Powers ESP-01                       | Make sure your Arduino’s 3.3V can supply enough current (\~250mA) or use AMS1117 3.3V regulator |
+
+
+REQUIRED LIBRARIES:-
+
+Install in Arduino IDE:
+--> DHT sensor library (by Adafruit)
+--> Adafruit Unified Sensor
+--> SoftwareSerial
+
+SET THINGS SPEAK :-
+ThingSpeak Setup Notes
+Create a ThingSpeak account.
+
+Create a new channel with two fields:
+Field1 = Temperature (°C)
+Field2 = Humidity (%)
+
+--> Go to API Keys tab → Copy Write API Key → Paste into API_KEY in the code.
+
+-> Upload code to Arduino Uno.
+--Open Serial Monitor → You should see "Connecting to WiFi..." and "OK" messages.
+--After ~20 seconds, check your ThingSpeak channel for updates.
+
+
+CODE:-
+
+#include <SoftwareSerial.h>
+#include <DHT.h>
+
+#define DHTPIN 2        // DHT22 data pin
+#define DHTTYPE DHT22   // Sensor type
+DHT dht(DHTPIN, DHTTYPE);
+
+SoftwareSerial esp8266(3, 2); // RX, TX (Arduino → ESP8266)
+
+// WiFi & ThingSpeak settings
+String WIFI_SSID = "YourWiFiName";
+String WIFI_PASS = "YourWiFiPassword";
+String API_KEY   = "YOUR_THINGSPEAK_WRITE_API_KEY";
+String HOST      = "api.thingspeak.com";
+String PORT      = "80";
+
+void setup() {
+  Serial.begin(9600);
+  esp8266.begin(115200);
+  dht.begin();
+
+  Serial.println("Connecting to WiFi...");
+  sendCommand("AT", 5, "OK");
+  sendCommand("AT+CWMODE=1", 5, "OK");
+  sendCommand("AT+CWJAP=\"" + WIFI_SSID + "\",\"" + WIFI_PASS + "\"", 20, "OK");
+}
+
+void loop() {
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Failed to read from DHT22");
+    return;
+  }
+
+  String data = "api_key=" + API_KEY + "&field1=" + String(t) + "&field2=" + String(h);
+
+  sendCommand("AT+CIPSTART=\"TCP\",\"" + HOST + "\"," + PORT, 15, "OK");
+  sendCommand("AT+CIPSEND=" + String(data.length() + 40), 4, ">");
+  
+  esp8266.println("POST /update HTTP/1.1");
+  esp8266.println("Host: " + HOST);
+  esp8266.println("Connection: close");
+  esp8266.println("Content-Type: application/x-www-form-urlencoded");
+  esp8266.println("Content-Length: " + String(data.length()));
+  esp8266.println();
+  esp8266.println(data);
+
+  delay(20000); // ThingSpeak requires 15+ seconds between updates
+}
+
+void sendCommand(String command, int maxTime, char readReplay[]) {
+  Serial.print("Sending: ");
+  Serial.println(command);
+  while (maxTime > 0) {
+    esp8266.println(command);
+    if (esp8266.find(readReplay)) {
+      Serial.println("OK");
+      break;
+    }
+    maxTime--;
+    delay(1000);
+  }
+}
