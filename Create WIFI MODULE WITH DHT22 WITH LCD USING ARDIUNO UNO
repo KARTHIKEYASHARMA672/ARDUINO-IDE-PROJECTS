@@ -1,0 +1,106 @@
+CONNECTIONS:-
+| Component     | Pin on Component | Connects to Arduino Uno Pin                                    |
+| ------------- | ---------------- | -------------------------------------------------------------- |
+| **DHT22**     | VCC              | 5V                                                             |
+|               | GND              | GND                                                            |
+|               | Data             | D2                                                             |
+| **LCD (I2C)** | VCC              | 5V                                                             |
+|               | GND              | GND                                                            |
+|               | SDA              | A4                                                             |
+|               | SCL              | A5                                                             |
+| **ESP-01**    | VCC              | 3.3V (NOT 5V!)                                                 |
+|               | GND              | GND                                                            |
+|               | TX               | Arduino Pin 2 (SoftwareSerial RX)                              |
+|               | RX               | Arduino Pin 3 (SoftwareSerial TX, via voltage divider 5V→3.3V) |
+|               | CH\_PD/EN        | 3.3V                                                           |
+
+
+CODE:-
+
+#include <SoftwareSerial.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include "DHT.h"
+
+// ====== DHT Setup ======
+#define DHTPIN 2
+#define DHTTYPE DHT22
+DHT dht(DHTPIN, DHTTYPE);
+
+// ====== LCD Setup ======
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Change address if needed
+
+// ====== ESP8266 Setup ======
+SoftwareSerial esp(2, 3); // RX, TX (Arduino RX=2, TX=3)
+
+// ====== WiFi & ThingSpeak ======
+String ssid = "YourWiFiName";
+String password = "YourWiFiPassword";
+String apiKey = "YOUR_THINGSPEAK_API_KEY";
+
+void setup() {
+  Serial.begin(9600);
+  esp.begin(115200); // ESP default baud
+  dht.begin();
+  lcd.init();
+  lcd.backlight();
+
+  lcd.setCursor(0, 0);
+  lcd.print("Connecting WiFi");
+
+  // Set ESP to low baud for stability
+  sendCommand("AT+UART_DEF=9600,8,1,0,0", 2000);
+  esp.end();
+  esp.begin(9600);
+  
+  connectWiFi();
+}
+
+void loop() {
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(h) || isnan(t)) {
+    lcd.setCursor(0, 0);
+    lcd.print("Sensor error");
+    delay(2000);
+    return;
+  }
+
+  // Display on LCD
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("T:");
+  lcd.print(t, 1);
+  lcd.print((char)223); // degree symbol
+  lcd.print("C");
+
+  lcd.setCursor(0, 1);
+  lcd.print("H:");
+  lcd.print(h, 1);
+  lcd.print("%");
+
+  // Send to ThingSpeak
+  String sendData = "GET /update?api_key=" + apiKey + "&field1=" + String(t) + "&field2=" + String(h) + "\r\n";
+  sendCommand("AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80", 2000);
+  sendCommand("AT+CIPSEND=" + String(sendData.length() + 2), 2000);
+  sendCommand(sendData, 2000);
+
+  delay(20000); // ThingSpeak limit: 15s minimum
+}
+
+void connectWiFi() {
+  sendCommand("AT+RST", 2000);
+  sendCommand("AT+CWMODE=1", 1000);
+  sendCommand("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 5000);
+}
+
+void sendCommand(String command, int timeout) {
+  esp.println(command);
+  long int time = millis();
+  while ((millis() - time) < timeout) {
+    while (esp.available()) {
+      Serial.write(esp.read());
+    }
+  }
+}
