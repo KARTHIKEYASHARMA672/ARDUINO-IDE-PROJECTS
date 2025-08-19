@@ -1,0 +1,26 @@
+CONEECTIONS TABLE:-
+| Arduino Uno Pin | Servo Motor Pin             |
+| --------------- | --------------------------- |
+| 5V              | VCC (Red wire)              |
+| GND             | GND (Black/Brown wire)      |
+| D9              | Signal (Yellow/Orange wire) |
+
+
+
+CODE:-
+#include <Servo.h>
+
+Servo myservo;  
+
+void setup() {
+  myservo.attach(9);  // attach servo signal pin to D9
+}
+
+void loop() {
+  myservo.write(0);    // move to 0 degrees
+  delay(1000);
+  myservo.write(90);   // move to 90 degrees
+  delay(1000);
+  myservo.write(180);  // move to 180 degrees
+  delay(1000);
+}
