@@ -1,0 +1,44 @@
+CONNECTIONS TABLE:-
+| COMPONENT           | PIN/TERMINAL        | CONNECT TO                  |
+| ------------------- | ------------------- | --------------------------- |
+| L293D Pin 1 (EN1)   | Enable 1,2          | Arduino Pin   9             |
+| L293D Pin 2 (IN1)   | Motor control input | Arduino Pin   8             |
+| L293D Pin 7 (IN2)   | Motor control input | Arduino Pin   7             |
+| L293D Pin 3 (OUT1)  | Motor output        | Motor terminal 1            |
+| L293D Pin 6 (OUT2)  | Motor output        | Motor terminal 2            |
+| L293D Pin 4,5,12,13 | GND                 | Arduino GND + Power GND     |
+| L293D Pin 16        | VCC1 (Logic 5V)     | Arduino 5V                  |
+| L293D Pin 8         | VCC2 (Motor supply) | External Battery (e.g., 9V) |
+| Motor Power GND     | -                   | Common GND with Arduino     |
+----------------------------------------------------------------------------------
+CODE:-
+// ARDUINO UNO WITH DC MOTOR USING L293D
+
+int motorPin1 = 8;   // IN1 on L293D
+int motorPin2 = 7;   // IN2 on L293D
+int enablePin = 9;   // EN1 on L293D (PWM for speed control)
+
+void setup() {
+  pinMode(motorPin1, OUTPUT);
+  pinMode(motorPin2, OUTPUT);
+  pinMode(enablePin, OUTPUT);
+}
+
+void loop() {
+  // MOTOR FORWARD
+  digitalWrite(motorPin1, HIGH);
+  digitalWrite(motorPin2, LOW);
+  analogWrite(enablePin, 200); // speed (0-255)
+  delay(3000);
+
+  // MOTOR BACKWARD
+  digitalWrite(motorPin1, LOW);
+  digitalWrite(motorPin2, HIGH);
+  analogWrite(enablePin, 200);
+  delay(3000);
+
+  // MOTOR STOP
+  digitalWrite(motorPin1, LOW);
+  digitalWrite(motorPin2, LOW);
+  delay(2000);
+}
