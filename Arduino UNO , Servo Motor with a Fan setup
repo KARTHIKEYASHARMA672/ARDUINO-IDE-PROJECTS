@@ -1,0 +1,38 @@
+CONNETOINS TABLE:-
+| Component                    | Arduino Pin                                | External Connection |
+| ---------------------------- | ------------------------------------------ | ------------------- |
+| Servo Signal (Orange/Yellow) | D9                                         | —                   |
+| Servo VCC (Red)              | 5V                                         | —                   |
+| Servo GND (Brown/Black)      | GND                                        | —                   |
+| Fan + (Red)                  | External 5V (through transistor)           | —                   |
+| Fan – (Black)                | Collector of NPN transistor (e.g., 2N2222) | —                   |
+| Transistor Emitter           | GND                                        | —                   |
+| Transistor Base              | D8 (through 220Ω resistor)                 | —                   |
+| External 5V GND              | Common with Arduino GND                    | —                   |
+
+---------------------------------------------------------------------------------------------------------------------
+CODE:-
+#include <Servo.h>
+
+Servo myServo;
+int fanPin = 8; // Controls transistor for fan
+
+void setup() {
+  myServo.attach(9);   // Servo on pin 9
+  pinMode(fanPin, OUTPUT);
+}
+
+void loop() {
+  // Example: Rotate servo and turn fan ON
+  myServo.write(0);     
+  digitalWrite(fanPin, HIGH); 
+  delay(2000);
+
+  myServo.write(90);    
+  digitalWrite(fanPin, LOW);  
+  delay(2000);
+
+  myServo.write(180);   
+  digitalWrite(fanPin, HIGH); 
+  delay(2000);
+}
