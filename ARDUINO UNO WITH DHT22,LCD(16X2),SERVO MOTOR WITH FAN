@@ -1,0 +1,80 @@
+CONNECTIONS TABLE:-
+| Component       | Pin on Component       | Connects To (Arduino UNO)               |
+| --------------- | ---------------------- | --------------------------------------- |
+| **DHT22**       | VCC                    | 5V                                      |
+|                 | GND                    | GND                                     |
+|                 | DATA                   | D2                                      |
+| **Servo Motor** | VCC (Red)              | 5V (use external 5V supply if possible) |
+|                 | GND (Black/Brown)      | GND                                     |
+|                 | Signal (Yellow/Orange) | D9                                      |
+| **16x2 LCD**    | VSS                    | GND                                     |
+|                 | VDD                    | 5V                                      |
+|                 | V0                     | Middle pin of 10k pot (contrast)        |
+|                 | RS                     | D7                                      |
+|                 | RW                     | GND                                     |
+|                 | EN                     | D8                                      |
+|                 | D4                     | D10                                     |
+|                 | D5                     | D11                                     |
+|                 | D6                     | D12                                     |
+|                 | D7                     | D13                                     |
+|                 | A (LED +)              | 5V (via 220Ω resistor)                  |
+|                 | K (LED -)              | GND                                     |
+
+-----------------------------------------------------------------------------------------------------------
+CODE:-
+#include <Servo.h>
+#include <DHT.h>
+#include <LiquidCrystal.h>
+
+// Pin configuration
+#define DHTPIN 2        // DHT22 data pin connected to Arduino pin 2
+#define DHTTYPE DHT22   // DHT22 sensor type
+#define SERVO_PIN 9     // Servo motor connected to pin 9
+
+// LCD: RS, EN, D4, D5, D6, D7
+LiquidCrystal lcd(7, 8, 10, 11, 12, 13);
+
+DHT dht(DHTPIN, DHTTYPE);
+Servo fanServo;
+
+void setup() {
+  lcd.begin(16, 2);
+  dht.begin();
+  fanServo.attach(SERVO_PIN);
+  lcd.print("DHT22 + FAN");
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+
+  // If failed to read, skip loop
+  if (isnan(temp) || isnan(hum)) {
+    lcd.setCursor(0, 0);
+    lcd.print("Sensor Error");
+    delay(2000);
+    return;
+  }
+
+  // Display on LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(temp);
+  lcd.print(" C");
+
+  lcd.setCursor(0, 1);
+  lcd.print("Hum: ");
+  lcd.print(hum);
+  lcd.print(" %");
+
+  // Control fan with temperature
+  if (temp > 30) {         // If temp > 30°C, rotate fan
+    fanServo.write(180);   // Max speed (simulate ON)
+  } else {
+    fanServo.write(0);     // OFF
+  }
+
+  delay(2000);
+}
