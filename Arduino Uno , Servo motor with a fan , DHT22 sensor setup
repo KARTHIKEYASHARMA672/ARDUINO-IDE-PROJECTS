@@ -1,0 +1,54 @@
+CONNECTIONS TABLE:-
+| Component    | Pin on Arduino UNO |
+| ------------ | ------------------ |
+| DHT22 VCC    | 5V                 |
+| DHT22 GND    | GND                |
+| DHT22 DATA   | Digital Pin **2**  |
+| Servo VCC    | 5V                 |
+| Servo GND    | GND                |
+| Servo Signal | Digital Pin **9**  |
+
+
+----------------------------------------------------------------
+
+CODE:-
+#include <DHT.h>
+#include <Servo.h>
+
+#define DHTPIN 2
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+Servo fanServo;
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+  fanServo.attach(9);   // Fan (servo) on pin 9
+  fanServo.write(0);    // Start at 0°
+}
+
+void loop() {
+  float temp = dht.readTemperature();
+  float hum  = dht.readHumidity();
+
+  if (isnan(temp) || isnan(hum)) {
+    Serial.println("DHT22 Error!");
+    return;
+  }
+
+  Serial.print("Temp: ");
+  Serial.print(temp);
+  Serial.print(" °C  Hum: ");
+  Serial.print(hum);
+  Serial.println(" %");
+
+  // Control fan via servo angle
+  if (temp > 30) {
+    fanServo.write(90);   // Turn fan ON (rotate to 90°)
+  } else {
+    fanServo.write(0);    // Fan OFF (back to 0°)
+  }
+
+  delay(2000);  // 2 sec delay between readings
+}
