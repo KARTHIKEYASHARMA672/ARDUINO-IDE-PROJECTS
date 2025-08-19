@@ -1,0 +1,25 @@
+CONNECTIONS TABLE:-
+|   Relay Module Pin   |   Arduino UNO Pin                |   Notes                                            |
+| -------------------- | -------------------------------- | -------------------------------------------------- |
+| VCC                  | 5V                               | Power for relay coil                               |
+| GND                  | GND                              | Common ground                                      |
+| IN (signal)          | D7 (or any digital pin)          | Control signal                                     |
+| COM (Common)         | One side of load or power supply | Middle pin of relay                                |
+| NO (Normally Open)   | Other side of load/power         | Connect here if you want device   OFF by default   |
+| NC (Normally Closed) | Other side of load/power         | Connect here if you want device   ON by default    |
+
+-------------------------------------------------------------------------------------------------------------------------
+CODE:-
+int relayPin = 7; // Relay control connected to D7
+
+void setup() {
+  pinMode(relayPin, OUTPUT);  // Set pin as output
+}
+
+void loop() {
+  digitalWrite(relayPin, HIGH); // Turn relay ON
+  delay(2000);                  // Wait 2 seconds
+
+  digitalWrite(relayPin, LOW);  // Turn relay OFF
+  delay(2000);                  // Wait 2 seconds
+}
