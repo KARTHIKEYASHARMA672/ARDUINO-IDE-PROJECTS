@@ -1,0 +1,30 @@
+CONNECTIONS TABLE:-
+|   Component        |   Pin on Arduino   |   Pin on Relay Module   |   Other Connection   |
+| ------------------ | ------------------ | ----------------------- | -------------------- |
+| Arduino 5V         | →                  | VCC                     | —                    |
+| Arduino GND        | →                  | GND                     | —                    |
+| Arduino D7         | →                  | IN (control pin)        | —                    |
+| AC Live Wire       | →                  | COM                     | —                    |
+| Bulb/Fan One End   | →                  | NO (Normally Open)      | —                    |
+| Bulb/Fan Other End | →                  | Neutral (AC Supply)     | —                    |
+
+-----------------------------------------------------------------------------------------------
+
+CODE:-
+// Pin connected to Relay
+int relayPin = 7;
+
+void setup() {
+  pinMode(relayPin, OUTPUT);
+  digitalWrite(relayPin, LOW); // Start with relay OFF
+}
+
+void loop() {
+  // Turn ON the Bulb/Fan
+  digitalWrite(relayPin, HIGH);
+  delay(5000);  // ON for 5 seconds
+
+  // Turn OFF the Bulb/Fan
+  digitalWrite(relayPin, LOW);
+  delay(5000);  // OFF for 5 seconds
+}
