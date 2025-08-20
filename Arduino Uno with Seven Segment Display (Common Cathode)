@@ -1,0 +1,57 @@
+CONNECTIONS TABLE:-
+| Seven Segment Pin            | Segment      | Arduino Uno Pin |
+| ---------------------------- | ------------ | --------------- |
+| a                            | Top          | 2               |
+| b                            | Top Right    | 3               |
+| c                            | Bottom Right | 4               |
+| d                            | Bottom       | 5               |
+| e                            | Bottom Left  | 6               |
+| f                            | Top Left     | 7               |
+| g                            | Middle       | 8               |
+| DP (Decimal Point, optional) | Dot          | 9               |
+| COM (Common Cathode)         | GND          | GND             |
+
+=---------------------------------------------------------------------------
+
+CODE:-
+// Arduino Uno with Seven Segment Display (Common Cathode)
+
+int segPins[] = {2, 3, 4, 5, 6, 7, 8}; // a, b, c, d, e, f, g
+int dp = 9; // decimal point
+
+// Digit patterns (0-9), 1 = ON, 0 = OFF
+// Order: a, b, c, d, e, f, g
+int digits[10][7] = {
+  {1,1,1,1,1,1,0}, // 0
+  {0,1,1,0,0,0,0}, // 1
+  {1,1,0,1,1,0,1}, // 2
+  {1,1,1,1,0,0,1}, // 3
+  {0,1,1,0,0,1,1}, // 4
+  {1,0,1,1,0,1,1}, // 5
+  {1,0,1,1,1,1,1}, // 6
+  {1,1,1,0,0,0,0}, // 7
+  {1,1,1,1,1,1,1}, // 8
+  {1,1,1,1,0,1,1}  // 9
+};
+
+void setup() {
+  for (int i=0; i<7; i++) {
+    pinMode(segPins[i], OUTPUT);
+  }
+  pinMode(dp, OUTPUT);
+  digitalWrite(dp, LOW); // keep decimal point OFF
+}
+
+void loop() {
+  for (int num=0; num<10; num++) {
+    showDigit(num);
+    delay(1000); // 1 second delay between numbers
+  }
+}
+
+// Function to display a digit
+void showDigit(int num) {
+  for (int i=0; i<7; i++) {
+    digitalWrite(segPins[i], digits[num][i]);
+  }
+}
